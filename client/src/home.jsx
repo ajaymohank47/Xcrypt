@@ -10,6 +10,7 @@ import Mission from './components/Mission';
 import Footer from './components/Footer';
 import MyComponent from './components/tra';
 import ETHPriceConverter from './components/ConvertCurrency';
+import ErrorBoundary from './components/ErrorBoundary';
 
 
 const Home = ()=>{
@@ -20,10 +21,14 @@ const Home = ()=>{
             <Navbar/>
              <Welcome/>
           </div>
-          <MyComponent/>
-          <ETHPriceConverter/>
+          <ErrorBoundary>
+            <MyComponent/>
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <ETHPriceConverter/>
+          </ErrorBoundary>
           <Services/>
-          {/* <CryptoPriceTracker/> */}
+          <CryptoPriceTracker/>
         </div>
         <Mission />
         <Footer />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
 
@@ -8,6 +8,7 @@ import logo from "../../images/xcrypt_logo.png";
 import {  signOut } from "firebase/auth";
 import {auth} from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { TransactionContext } from "../context/TransactionContext";
 
 
 
@@ -17,6 +18,23 @@ const NavBarItem = ({ title, classprops }) => (
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = React.useState(false);
+  
+  // Add error boundary for context
+  let contextValues;
+  try {
+    contextValues = useContext(TransactionContext);
+  } catch (error) {
+    console.error("Error accessing TransactionContext:", error);
+    contextValues = {
+      connectWallet: () => {},
+      currentAccount: "",
+      isLoading: false,
+      error: "Context error",
+      isMetaMaskInstalled: false
+    };
+  }
+  
+  const { connectWallet, currentAccount, isLoading, error, isMetaMaskInstalled } = contextValues;
 
   //signout
   const navigate = useNavigate();
@@ -31,22 +49,13 @@ const Navbar = () => {
       });
   }
 
-  //open metamask wallet 
-  const openMetaMask = () => {
-    if (window.ethereum) {
-      window.ethereum.request({ method: 'eth_requestAccounts' })
-        .then(accounts => {
-          // MetaMask is connected and accounts are accessible
-          console.log('MetaMask wallet connected:', accounts);
-        })
-        .catch(error => {
-          // Handle error
-          console.error('Error connecting to MetaMask:', error);
-        });
-    } else {
-      // MetaMask is not installed
-      console.error('MetaMask is not installed');
+  //open metamask wallet using context
+  const handleWalletConnection = () => {
+    if (!isMetaMaskInstalled) {
+      alert("MetaMask is not installed. Please install MetaMask extension from https://metamask.io/");
+      return;
     }
+    connectWallet();
   };
 
   return (
@@ -91,8 +100,20 @@ const Navbar = () => {
             (item, index) => <NavBarItem key={item + index} title={item} classprops="my-2 text-lg" />,
           )} */}
 
-           {/* //metamask wallet open  */}
-      <button onClick={openMetaMask}>Wallets</button>
+           {/* MetaMask wallet connection */}
+      <button 
+        onClick={handleWalletConnection}
+        disabled={isLoading}
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+      >
+        {isLoading ? "Connecting..." : currentAccount ? `${currentAccount.slice(0,6)}...${currentAccount.slice(-4)}` : "Connect Wallet"}
+      </button>
+      
+      {error && (
+        <div className="text-red-500 text-sm mt-2 max-w-xs">
+          {error}
+        </div>
+      )}
 
           {/* Signout Button */}
           <button onClick={handleLogout}>
