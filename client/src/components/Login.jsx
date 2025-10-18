@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { colors } = useTheme();
 
     const onLogin = (e) => {
         e.preventDefault();
@@ -25,13 +27,14 @@ const Login = () => {
     };
 
     return (
-        <main className="min-h-screen flex justify-center items-center bg-black">
-            <section className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+        <main className={`min-h-screen flex justify-center items-center ${colors.primary}`}>
+            <section className={`${colors.card} rounded-xl shadow-2xl p-8 max-w-md w-full mx-4`}>
                 <div>
-                    <h1 className="text-3xl font-semibold text-center">Xcrypt</h1>
+                    <h1 className={`text-3xl font-bold text-center ${colors.textPrimary} mb-2`}>Xcrypt</h1>
+                    <p className={`text-center ${colors.textMuted} mb-8`}>Welcome back! Please sign in to your account.</p>
                     <form className="mt-8">
                         <div>
-                            <label htmlFor="email-address" className="text-sm font-medium text-gray-600" >
+                            <label htmlFor="email-address" className={`text-sm font-medium ${colors.textSecondary}`}>
                                 Email address
                             </label>
                             <input
@@ -39,14 +42,14 @@ const Login = () => {
                                 name="email"
                                 type="email"
                                 required
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="Email address"
+                                className={`mt-2 block w-full rounded-lg ${colors.input} ${colors.inputFocus} px-4 py-3 ${colors.textPrimary} placeholder-gray-400 transition-all duration-200`}
+                                placeholder="Enter your email"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
-                        <div className="mt-4">
-                            <label htmlFor="password" className="text-sm font-medium text-gray-600">
+                        <div className="mt-6">
+                            <label htmlFor="password" className={`text-sm font-medium ${colors.textSecondary}`}>
                                 Password
                             </label>
                             <input
@@ -54,8 +57,8 @@ const Login = () => {
                                 name="password"
                                 type="password"
                                 required
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="Password"
+                                className={`mt-2 block w-full rounded-lg ${colors.input} ${colors.inputFocus} px-4 py-3 ${colors.textPrimary} placeholder-gray-400 transition-all duration-200`}
+                                placeholder="Enter your password"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
@@ -63,16 +66,16 @@ const Login = () => {
                         <div className="mt-6">
                             <button
                                 onClick={onLogin}
-                                className="w-full px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                className={`w-full px-4 py-3 text-sm font-semibold text-white ${colors.buttonPrimary} rounded-lg transition-all duration-200 shadow-sm`}
                             >
                                 Login
                             </button>
                         </div>
                     </form>
 
-                    <p className="text-sm text-gray-600 text-center mt-4">
+                    <p className={`text-sm ${colors.textSecondary} text-center mt-6`}>
                         No account yet?{' '}
-                        <NavLink to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+                        <NavLink to="/signup" className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200">
                             Sign up
                         </NavLink>
                     </p>

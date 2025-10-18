@@ -58,9 +58,9 @@ const CryptoPriceTracker = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-950 my-4">
           {cryptoData.slice(0, displayCount).map((crypto) => (
             <div key={crypto.id} className="p-4 rounded-lg shadow-md bg-slate-800 flex items-center space-x-4">
-              <img 
-                src={crypto.image} 
-                alt={crypto.name} 
+              <img
+                src={crypto.image}
+                alt={crypto.name}
                 className="w-12 h-12 rounded-full"
               />
               <div className="flex-1">
@@ -79,7 +79,7 @@ const CryptoPriceTracker = () => {
             </div>
           ))}
         </div>
-        
+
         {displayCount < cryptoData.length && (
           <div className="flex justify-center mt-6">
             <button
@@ -91,6 +91,8 @@ const CryptoPriceTracker = () => {
           </div>
         )}
       </main>
+
+
     </div>
   );
 };

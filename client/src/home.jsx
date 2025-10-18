@@ -11,13 +11,16 @@ import Footer from './components/Footer';
 import MyComponent from './components/tra';
 import ETHPriceConverter from './components/ConvertCurrency';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useTheme } from './context/ThemeContext';
 
 
 const Home = ()=>{
+    const { colors } = useTheme();
+    
     return (
         <>
-        <div className='min-h-screen'>
-          <div className='bg-gradient-to-bl from-orange-900 via-black to-black'>
+        <div className={`min-h-screen ${colors.primary}`}>
+          <div className={colors.hero}>
             <Navbar/>
              <Welcome/>
           </div>

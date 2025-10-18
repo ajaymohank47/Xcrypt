@@ -9,8 +9,7 @@ import {  signOut } from "firebase/auth";
 import {auth} from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { TransactionContext } from "../context/TransactionContext";
-
-
+import { useTheme } from "../context/ThemeContext";
 
 const NavBarItem = ({ title, classprops }) => (
   <li className={`mx-4 cursor-pointer ${classprops}`}>{title}</li>
@@ -18,6 +17,7 @@ const NavBarItem = ({ title, classprops }) => (
 
 const Navbar = () => {
   const [toggleMenu, setToggleMenu] = React.useState(false);
+  const { colors } = useTheme();
   
   // Add error boundary for context
   let contextValues;
@@ -59,70 +59,75 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full flex md:justify-center justify-between items-center p-4">
-    <div className="md:flex-[0.9] flex-initial justify-center items-center">
-      <img src={logo} alt="logo" className="w-32 cursor-pointer" />
-    </div>
-    <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
-      {/* {["Market", "Exchange", "Tutorials", "Wallets"].map((item, index) => (
-        <NavBarItem key={item + index} title={item} />
-      ))} */}
-
-      {/* <button >Market</button>
-
-      <button>Exchange</button>
-
-      <button>Tutorial</button> */}
-  {/* //metamask wallet open  */}
-  {/* <button onClick={openMetaMask} className="my-2">Wallets</button> */}
-
-{/* Signout Button */}
-<button onClick={handleLogout} className="my-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 ease-in-out">
-  Logout
-</button>
-
-    </ul>
-    
-    <div className="flex relative">
-      {!toggleMenu && (
-        <HiMenuAlt4 fontSize={28} className="text-white md:hidden cursor-pointer" onClick={() => setToggleMenu(true)} />
-      )}
-      {toggleMenu && (
-        <AiOutlineClose fontSize={28} className="text-white md:hidden cursor-pointer" onClick={() => setToggleMenu(false)} />
-      )}
-      {toggleMenu && (
-        <ul
-          className="z-10 fixed -top-0 -right-2 p-3 w-[70vw] h-screen shadow-2xl md:hidden list-none
-          flex flex-col justify-start items-end rounded-md blue-glassmorphism text-white animate-slide-in"
-        >
-          <li className="text-xl w-full my-2"><AiOutlineClose onClick={() => setToggleMenu(false)} /></li>
-          {/* {["Market", "Exchange", "Tutorials", "Wallets"].map(
-            (item, index) => <NavBarItem key={item + index} title={item} classprops="my-2 text-lg" />,
-          )} */}
-
-           {/* MetaMask wallet connection */}
-      <button 
-        onClick={handleWalletConnection}
-        disabled={isLoading}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
-      >
-        {isLoading ? "Connecting..." : currentAccount ? `${currentAccount.slice(0,6)}...${currentAccount.slice(-4)}` : "Connect Wallet"}
-      </button>
+    <nav className={`w-full flex md:justify-center justify-between items-center p-4 ${colors.navbar}`}>
+      <div className="md:flex-[0.9] flex-initial justify-center items-center">
+        <img src={logo} alt="logo" className="w-32 cursor-pointer" />
+      </div>
       
-      {error && (
-        <div className="text-red-500 text-sm mt-2 max-w-xs">
-          {error}
-        </div>
-      )}
+      <ul className={`${colors.textPrimary} md:flex hidden list-none flex-row justify-between items-center flex-initial space-x-4`}>
+        {/* Wallet Connection Button */}
+        <button 
+          onClick={handleWalletConnection}
+          disabled={isLoading}
+          className={`px-4 py-2 ${colors.buttonPrimary} text-white rounded-lg disabled:opacity-50 transition-all duration-200 shadow-sm`}
+        >
+          {isLoading ? "Connecting..." : currentAccount ? `${currentAccount.slice(0,6)}...${currentAccount.slice(-4)}` : "Connect Wallet"}
+        </button>
+        
+        {error && (
+          <div className="text-red-500 text-sm max-w-xs">
+            {error}
+          </div>
+        )}
 
-          {/* Signout Button */}
-          <button onClick={handleLogout}>
-                        Logout
-                    </button>
-        </ul>
-      )}
-    </div>
-  </nav>
+        {/* Signout Button */}
+        <button 
+          onClick={handleLogout} 
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-200 shadow-sm"
+        >
+          Logout
+        </button>
+      </ul>
+    
+      <div className="flex relative">
+        {!toggleMenu && (
+          <HiMenuAlt4 fontSize={28} className={`${colors.textPrimary} md:hidden cursor-pointer`} onClick={() => setToggleMenu(true)} />
+        )}
+        {toggleMenu && (
+          <AiOutlineClose fontSize={28} className={`${colors.textPrimary} md:hidden cursor-pointer`} onClick={() => setToggleMenu(false)} />
+        )}
+        {toggleMenu && (
+          <ul className={`z-10 fixed -top-0 -right-2 p-3 w-[70vw] h-screen shadow-2xl md:hidden list-none flex flex-col justify-start items-end rounded-md ${colors.secondary} ${colors.textPrimary} animate-slide-in space-y-4`}>
+            <li className="text-xl w-full my-2">
+              <AiOutlineClose onClick={() => setToggleMenu(false)} />
+            </li>
+
+            {/* Mobile Wallet Connection */}
+            <button 
+              onClick={handleWalletConnection}
+              disabled={isLoading}
+              className={`px-4 py-2 ${colors.buttonPrimary} text-white rounded-lg disabled:opacity-50 transition-all duration-200`}
+            >
+              {isLoading ? "Connecting..." : currentAccount ? `${currentAccount.slice(0,6)}...${currentAccount.slice(-4)}` : "Connect Wallet"}
+            </button>
+            
+            {error && (
+              <div className="text-red-500 text-sm max-w-xs">
+                {error}
+              </div>
+            )}
+
+            {/* Mobile Signout Button */}
+            <button 
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+            >
+              Logout
+            </button>
+          </ul>
+        )}
+      </div>
+    </nav>
   );
 };
 

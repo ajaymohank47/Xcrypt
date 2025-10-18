@@ -10,6 +10,7 @@ import Mission from './components/Mission';
 import Footer from './components/Footer';
 import { auth } from './firebase';
 import Home from './home';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -22,9 +23,8 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <>
-
+    <ErrorBoundary>
+      <Router>
         <div>
           <section>
             <Routes>
@@ -35,8 +35,8 @@ const App = () => {
             </Routes>
           </section>
         </div>
-      </>
-    </Router>
+      </Router>
+    </ErrorBoundary>
   );
 };
 
