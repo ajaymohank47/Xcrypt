@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import { SiEthereum } from "react-icons/si";
 import { BsInfoCircle } from "react-icons/bs";
@@ -6,13 +6,9 @@ import QRCode from "qrcode.react";
 import logo from "../../images/xcrypt_logo.png";
 import { QrReader } from 'react-qr-reader';
 
-
 import { TransactionContext } from "../context/TransactionContext";
 import { shortenAddress } from "../utils/shortenAddress";
 import { Loader } from ".";
-
-const companyCommonStyles =
-  "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
 const Input = ({ placeholder, name, type, value, handleChange }) => (
   <input
@@ -21,7 +17,7 @@ const Input = ({ placeholder, name, type, value, handleChange }) => (
     step="0.0001"
     value={value}
     onChange={(e) => handleChange(e, name)}
-    className="my-2 w-full rounded-sm p-2 outline-none bg-transparent text-white border-none text-sm white-glassmorphism"
+    className="my-2 w-full bg-slate-800/40 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 transition-all duration-300 text-sm"
   />
 );
 
@@ -142,7 +138,7 @@ const Welcome = () => {
                     <option value={"environment"}>Back Camera</option>
                     <option value={"user"}>Front Camera</option>
                   </select>
-  
+
                   <QrReader
                     facingMode={selected}
                     delay={1000}
@@ -163,11 +159,9 @@ const Welcome = () => {
 
 
 
-        <div className="flex flex-col flex-1 items-center justify-start w-full md:mt-0 mt-10 md:ml-50 h-90">
-          <div className="p-8 sm:w-96 w-full flex flex-col justify-start items-center blue-glassmorphism">
-            {/* Address To input with QR scanner option */}
+        <div className="flex flex-col flex-1 items-center justify-start w-full md:mt-0 mt-10 md:ml-50">
+          <div className="p-5 sm:w-96 w-full h-80 bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl flex flex-col">
             <Input
-              className="py-2"
               placeholder="Address To"
               name="addressTo"
               type="text"
@@ -175,7 +169,6 @@ const Welcome = () => {
               handleChange={handleChange}
             />
 
-            {/* Other input fields */}
             <Input
               placeholder="Amount (ETH)"
               name="amount"
@@ -183,6 +176,7 @@ const Welcome = () => {
               value={formData.amount}
               handleChange={handleChange}
             />
+
             <Input
               placeholder="Name"
               name="keyword"
@@ -190,15 +184,17 @@ const Welcome = () => {
               value={formData.keyword}
               handleChange={handleChange}
             />
-            <Input
+
+            <textarea
               placeholder="Enter Message"
               name="message"
-              type="text"
               value={formData.message}
-              handleChange={handleChange}
+              onChange={(e) => handleChange(e, "message")}
+              rows={2}
+              className="my-2 w-full bg-slate-800/40 backdrop-blur-sm border border-slate-600/50 rounded-lg px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 transition-all duration-300 resize-none text-sm"
             />
 
-            <div className="h-[1px] w-full bg-gray-400 my-2" />
+            <div className="h-[1px] w-full bg-slate-600/50 my-2" />
 
             {isLoading ? (
               <Loader />
@@ -206,7 +202,8 @@ const Welcome = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="text-white w-full mt-2 border-[1px] p-2 border-[#3d4f7c] hover:bg-[#3d4f7c] rounded-full cursor-pointer"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-sm mt-auto"
+                disabled={!formData.addressTo || !formData.amount || !formData.keyword || !formData.message}
               >
                 Send now
               </button>
