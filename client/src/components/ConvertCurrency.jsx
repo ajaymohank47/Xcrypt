@@ -1,27 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useTheme } from "../context/ThemeContext";
 
 const ETHPriceConverter = () => {
   const [ethPriceInUSD, setEthPriceInUSD] = useState(null);
   const [ethPriceInINR, setEthPriceInINR] = useState(null);
-  const [ethAmount, setEthAmount] = useState(1); // Initial ETH amount
+  const [ethAmount, setEthAmount] = useState(1);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { colors } = useTheme();
+  const intervalRef = useRef(null);
+
+  const fetchEthPrice = useCallback(async () => {
+    try {
+      setIsUpdating(true);
+      const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd,inr");
+      const data = await response.json();
+      setEthPriceInUSD(data.ethereum.usd);
+      setEthPriceInINR(data.ethereum.inr);
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error("Error fetching Ethereum price:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchEthPrice = async () => {
-      try {
-        const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd,inr");
-        const data = await response.json();
-        setEthPriceInUSD(data.ethereum.usd);
-        setEthPriceInINR(data.ethereum.inr);
-      } catch (error) {
-        console.error("Error fetching Ethereum price:", error);
-        // Handle errors gracefully (e.g., display an error message)
+    // Initial fetch
+    fetchEthPrice();
+
+    // Set up auto-refresh every 15 seconds for ETH price
+    intervalRef.current = setInterval(() => {
+      fetchEthPrice();
+    }, 15000);
+
+    // Cleanup interval on component unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
-
-    fetchEthPrice();
-  }, []); // Empty dependency array to fetch price only once on component mount
+  }, [fetchEthPrice]);
 
   const handleEthAmountChange = (event) => {
     const newEthAmount = parseFloat(event.target.value);
@@ -40,11 +59,28 @@ const ETHPriceConverter = () => {
     return (ethAmount * price).toFixed(2);
   };
 
+  const formatLastUpdated = () => {
+    if (!lastUpdated) return '';
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdated) / 1000);
+    
+    if (diff < 60) return `${diff}s ago`;
+    return lastUpdated.toLocaleTimeString();
+  };
+
   return (
     <div className={`eth-price-converter ${colors.card} shadow-lg px-8 py-6 flex flex-col items-center rounded-xl mx-4 my-8`}>
-      <h2 className={`${colors.textPrimary} text-2xl font-bold mb-6 text-center`}>
-        💰 ETH Price Converter
-      </h2>
+      <div className="flex items-center justify-between w-full mb-6">
+        <h2 className={`${colors.textPrimary} text-2xl font-bold text-center flex-1`}>
+          💰 ETH Price Converter
+        </h2>
+        <div className="flex items-center space-x-2">
+          <div className={`w-2 h-2 rounded-full ${isUpdating ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
+          <span className={`text-xs ${colors.textMuted}`}>
+            {isUpdating ? 'Updating...' : lastUpdated ? formatLastUpdated() : 'Live'}
+          </span>
+        </div>
+      </div>
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="flex flex-col">
@@ -78,12 +114,16 @@ const ETHPriceConverter = () => {
             <p className={`${colors.textPrimary} text-lg font-semibold mb-2`}>
               {ethAmount} ETH equals:
             </p>
-            <p className="text-green-600 font-bold text-xl mb-1">
-              ${convertEthToCurrency("USD")} USD
-            </p>
-            <p className="text-blue-600 font-bold text-xl">
-              ₹{convertEthToCurrency("INR")} INR
-            </p>
+            <div className={`${isUpdating ? 'animate-pulse' : ''}`}>
+              <p className="text-green-600 font-bold text-xl mb-1 flex items-center justify-center">
+                ${convertEthToCurrency("USD")} USD
+                {isUpdating && <div className="ml-2 w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>}
+              </p>
+              <p className="text-blue-600 font-bold text-xl flex items-center justify-center">
+                ₹{convertEthToCurrency("INR")} INR
+                {isUpdating && <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>}
+              </p>
+            </div>
           </div>
         ) : (
           <div className="text-center">
@@ -98,7 +138,7 @@ const ETHPriceConverter = () => {
       </div>
 
       <p className={`${colors.textMuted} text-xs mt-4 text-center`}>
-        Prices updated in real-time via CoinGecko API
+        🔄 Auto-updates every 15 seconds • 📊 Real-time ETH prices via CoinGecko API
       </p>
     </div>
   );
